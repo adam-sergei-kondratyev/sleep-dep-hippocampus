@@ -1,6 +1,8 @@
 <!-- README.md is generated from README.template.md by `make readme`. Edit the template, not README.md. -->
 # Sleep deprivation and the mouse hippocampal transcriptome: an independent PyDESeq2 reanalysis
 
+[![ci](https://github.com/adam-sergei-kondratyev/sleep-dep-hippocampus/actions/workflows/ci.yml/badge.svg)](https://github.com/adam-sergei-kondratyev/sleep-dep-hippocampus/actions/workflows/ci.yml)
+
 **Question:** does an independent Python reanalysis with a different statistical method (PyDESeq2 instead of edgeR) reproduce the hippocampal gene expression changes reported after 5 hours of sleep deprivation in mice by Gaine et al. (2021)?
 
 ## Result in brief
