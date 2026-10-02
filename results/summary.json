@@ -11,7 +11,7 @@
   "recovery_pct": 77.3,
   "n_edger_only_padj_nan": 73,
   "n_edger_only_tested": 187,
-  "n_padj_nan_cooks": 0,
+  "edger_only_padj_nan_pct": 28.1,
   "direction_agreement_pct": 100.0,
   "spearman_rho": 0.974,
   "n_spearman": 22582,

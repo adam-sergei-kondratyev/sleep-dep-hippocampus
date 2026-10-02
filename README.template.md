@@ -17,7 +17,7 @@
 
 - **Statistical test.** PyDESeq2 uses the DESeq2 Wald test. The authors used edgeR's quasi-likelihood F-test (`glmQLFit(..., robust=TRUE)`), which accounts for uncertainty in dispersion estimates and is generally more conservative.
 - **Normalization.** PyDESeq2 uses median-of-ratios size factors. The authors used EDASeq GC-content normalization.
-- **Filtering.** PyDESeq2 sets the adjusted p-value to missing for {{n_padj_nan}} low-information genes (independent filtering or outlier handling); these are counted as not significant. Of the {{n_edger_only}} published genes PyDESeq2 does not recover, {{n_edger_only_padj_nan}} fall in this group and the other {{n_edger_only_tested}} were tested but did not reach FDR < {{fdr}}. Most of the gap therefore comes from the different test and normalization, not from filtering.
+- **Filtering.** PyDESeq2 sets the adjusted p-value to missing for {{n_padj_nan}} low-information genes (independent filtering or outlier handling); these are counted as not significant. Of the {{n_edger_only}} published genes PyDESeq2 does not recover, {{n_edger_only_padj_nan}} ({{edger_only_padj_nan_pct}}%) fall in this group; the other {{n_edger_only_tested}} were tested but did not reach FDR < {{fdr}}, which reflects the different test and normalization.
 
 ## Memory-consolidation genes (descriptive)
 
@@ -37,7 +37,7 @@ Seven genes from my sleep and memory consolidation literature review (Arc, Nr4a1
 
 ## Reproduce
 
-Requires Python 3.12+ (the pinned requirements need it), GNU Make, and internet access. On Windows, use WSL. Clone this repository, then:
+Requires Python 3.12+ (the pinned requirements need it), GNU Make 4.3+, and internet access. On Windows, use WSL. Clone this repository, then:
 
 ~~~
 python3 -m venv .venv && source .venv/bin/activate

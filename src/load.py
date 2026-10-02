@@ -1,36 +1,32 @@
-"""Load counts, sample metadata, and the authors' edgeR table, aligned (design doc 5.2)."""
+"""Aligned loaders for counts, sample metadata, and the published edgeR table."""
 from __future__ import annotations
 
 import pandas as pd
 
-from src.common import COUNTS_FILE, EDGER_FILE, LIBRARY_SIZES_CSV, RESULTS_DIR, SAMPLE_INFO_FILE
+from src.common import COUNTS_FILE, DE_RESULTS_FILE, EDGER_FILE, SAMPLE_INFO_FILE
 
 
 def load_edger() -> pd.DataFrame:
-    """Authors' results. Index = versioned Ensembl ID; never join on the unversioned ensembl_gene_id column."""
+    """Index is the versioned Ensembl ID, the only safe join key."""
     return pd.read_csv(EDGER_FILE, index_col=0)
 
 
 def load_counts(universe: pd.Index | None = None) -> pd.DataFrame:
-    """Samples x genes integer matrix, optionally restricted to (and ordered by) a gene universe."""
+    """Samples x genes int64 matrix, restricted to and ordered by `universe` when given."""
     counts = pd.read_csv(COUNTS_FILE, index_col=0)
     if universe is not None:
         missing = universe.difference(counts.index)
-        if len(missing) > 0:
+        if len(missing):
             raise KeyError(f"{len(missing)} universe genes absent from counts, e.g. {list(missing[:3])}")
         counts = counts.loc[universe]
-    return counts.T.astype(int)
+    return counts.T.astype("int64")
 
 
 def load_meta(samples: pd.Index) -> pd.DataFrame:
-    """batch and exposure per sample, rows in the same order as `samples`."""
-    meta = pd.read_csv(SAMPLE_INFO_FILE, index_col=0)[["batch", "exposure"]]
-    return meta.loc[samples]
+    return pd.read_csv(SAMPLE_INFO_FILE, index_col=0).loc[samples, ["batch", "exposure"]]
 
 
-def write_library_sizes(counts: pd.DataFrame) -> pd.Series:
-    """QC table of total counts per sample (a CSV, so figures/ holds exactly the four required PNGs)."""
-    sizes = counts.sum(axis=1).rename("library_size")
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    sizes.to_csv(LIBRARY_SIZES_CSV)
-    return sizes
+def load_de_results() -> pd.DataFrame:
+    if not DE_RESULTS_FILE.is_file():
+        raise FileNotFoundError(f"{DE_RESULTS_FILE} not found; run `make de` first")
+    return pd.read_csv(DE_RESULTS_FILE, index_col=0, float_precision="round_trip")

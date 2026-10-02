@@ -1,6 +1,6 @@
-"""Write the four required figures (design doc 5.2, 5.4, 5.5).
+"""QC table and the four required figures (design doc 5.2, 5.4, 5.5).
 
-Usage: python -m src.plots   (requires `make de` and `make compare` first)
+Usage: python -m src.plots
 """
 from __future__ import annotations
 
@@ -8,16 +8,16 @@ import json
 
 import matplotlib
 
-matplotlib.use("Agg")  # headless: works in CI and over SSH
+matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from sklearn.decomposition import PCA
 
-from src.common import FDR, FIGURES_DIR, MEMORY_GENES_CSV, SUMMARY_JSON
-from src.compare import join_results, load_de_results
-from src.load import load_counts, load_edger, load_meta
+from src.common import FDR, FIGURES_DIR, LIBRARY_SIZES_CSV, MEMORY_GENES_CSV, SUMMARY_JSON
+from src.compare import join_results
+from src.load import load_counts, load_de_results, load_edger, load_meta
 
 DPI = 200
 EXPOSURE_COLORS: dict[str, str] = {"NSD": "#4C72B0", "SD": "#DD8452"}
@@ -33,15 +33,14 @@ def _save(fig: plt.Figure, name: str) -> None:
 
 def plot_pca(counts: pd.DataFrame, meta: pd.DataFrame, n_top: int = 500) -> None:
     """PCA on log2(CPM + 1) of the n_top most variable genes; color = exposure, marker = batch."""
-    lib = counts.sum(axis=1)
-    logcpm = np.log2(counts.div(lib, axis=0) * 1e6 + 1)
-    top = logcpm.var(axis=0).nlargest(n_top).index
-    pca = PCA(n_components=2)
-    pcs = pca.fit_transform(logcpm[top])  # PCA centers each gene
+    x = counts.to_numpy(dtype=np.float64)
+    logcpm = np.log2(x / x.sum(axis=1, keepdims=True) * 1e6 + 1.0)
+    top = np.argpartition(logcpm.var(axis=0, ddof=1), -n_top)[-n_top:]
+    pca = PCA(n_components=2, svd_solver="full")
+    pcs = pca.fit_transform(logcpm[:, top])
     ev = pca.explained_variance_ratio_ * 100
     fig, ax = plt.subplots(figsize=(5.5, 4.5))
-    for (exposure, batch), idx in meta.groupby(["exposure", "batch"]).groups.items():
-        rows = meta.index.get_indexer(idx)
+    for (exposure, batch), rows in meta.groupby(["exposure", "batch"]).indices.items():
         ax.scatter(pcs[rows, 0], pcs[rows, 1], c=EXPOSURE_COLORS.get(exposure, "gray"),
                    marker=BATCH_MARKERS.get(batch, "^"), s=60, edgecolor="black", linewidth=0.5,
                    label=f"{exposure}, {batch}")
@@ -107,6 +106,7 @@ def main() -> None:
     summary = json.loads(SUMMARY_JSON.read_text())
     edger = load_edger()
     counts = load_counts(universe=edger.index)
+    counts.sum(axis=1).rename("library_size").to_csv(LIBRARY_SIZES_CSV)
     plot_pca(counts, load_meta(counts.index))
     plot_overlap(summary)
     plot_logfc_scatter(join_results(load_de_results(), edger), summary)

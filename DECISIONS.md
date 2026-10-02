@@ -11,3 +11,7 @@
 - environment.yml delegates to requirements.txt so versions are pinned in one place.
 - CI does not diff README.md or figures, because last-digit drift across machines could cause false failures; tests enforce the Section 8 tolerances instead.
 - Requires Python 3.12+, not the spec's 3.11+: the pip-freeze pins (e.g. anndata 0.13.4) have no Python 3.11 builds; full pipeline verified identical on Python 3.12.3 and 3.14.4.
+- Makefile uses file targets with dependencies, so an unchanged step is never rerun; a no-op `make all` takes about 2 s.
+- Tests read the pipeline's results/pydeseq2_results.csv when present instead of refitting the model, halving `make all` time; they fit the model themselves only when that file is absent.
+- 95% intervals use the exact normal quantile 1.959963984540054 instead of 1.96 (differences below 1e-5).
+- download.py records file sizes and SHA-256 hashes in data/raw/manifest.json for provenance; that file is also the Make stamp for the download step.
