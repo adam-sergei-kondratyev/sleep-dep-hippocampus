@@ -56,6 +56,10 @@ Data are downloaded at runtime from the authors' repository and are not redistri
 - Muzellec B, Teleńczuk M, Cabeli V, Andreux M. PyDESeq2: a python package for bulk RNA-seq differential expression analysis. Bioinformatics. 2023. doi:10.1093/bioinformatics/btad547
 - Love MI, Huber W, Anders S. Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2. Genome Biology. 2014;15:550. doi:10.1186/s13059-014-0550-8
 
+## AI assistance
+
+I used Claude (Anthropic) to help plan the project and debug the code in the end. I chose the study and the question, selected the memory-consolidation genes from my own literature review, ran every step on my own machine. I reviewed the output results and the bug fixes proposed by Claude, so I am responsible for the content of this repository.
+
 ## License
 
 Code: MIT (see `LICENSE`). The data belong to their original authors.
