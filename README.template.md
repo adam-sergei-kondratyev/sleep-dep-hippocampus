@@ -49,7 +49,7 @@ make all
 
 ## AI assistance
 
-I used Claude (Anthropic) to help plan the project, write and debug the code, and draft this README, but I chose the study and the question, picked the memory-consolidation genes from my own literature review, ran every step on my own computer, and reviewed the results, so I am responsible for everything in this repository.
+I used Claude (Anthropic) to help plan the project at the start and debug the code in the end. I chose the study and the question, picked the memory-consolidation genes from my own literature review, ran every step on my own computer, and reviewed the results, so I am responsible for everything in this repository.
 
 ## License
 
